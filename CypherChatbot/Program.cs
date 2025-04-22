@@ -12,6 +12,7 @@ namespace CypherChatBot
         {
             Console.Title = "Cypher - Your Cybersecurity Companion";
             PrintBanner();
+            PlayIntroductionAudio("Cypher Chatbot.wav");
         }
 
         static void PrintBanner()
@@ -26,6 +27,30 @@ _________                  .__
         \/  \/     |__|         \/     \/        
 ");
             Console.ResetColor();
+        }
+
+        static void PlayIntroductionAudio(string filePath)
+        {
+            try
+            {
+                string fullPath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+                if (File.Exists(fullPath))
+                {
+                    new SoundPlayer(fullPath).PlaySync();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    PrintWithEffect($"Audio file not found: {filePath}");
+                    Console.ResetColor();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                PrintWithEffect($"Error playing audio: {ex.Message}");
+                Console.ResetColor();
+            }
         }
 
         static void DrawDivider(string title = "")
