@@ -1,16 +1,10 @@
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/abWLn-9_)
+
 ---------------------------------------------------------------------------------
 Cypher - Cybersecurity Chatbot
 ---------------------------------------------------------------------------------
-_________                  .__                     
-\_   ___ \  ___.__.______  |  |__    ____  _______ 
-/    \  \/ <   |  |\____ \ |  |  \ _/ __ \ \_  __ \
-\     \____ \___  ||  |_> >|   Y  \  ___/  |  | n\/
- \______  / / ____||   __/ |___|  /\___  > |__|   
-        \/  \/     |__|         \/     \/        
----------------------------------------------------------------------------------
 Description
----------------------------------------------------------------------------------
+
 Cypher is a simple console application built in C#, an interactive chatbot that educates users on cybersecurity. Some of its features include: text-based interaction, voice greeting, and personalized responses. 
 
 ---------------------------------------------------------------------------------
@@ -85,4 +79,3 @@ Output: Cypher explains what phishing is.
 
 Input: how are you
 Output: Cypher responds with a personality-based reply.
----------------------------------------------------------------------------------
