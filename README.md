@@ -29,29 +29,33 @@ How to Install and Run the Project
 Prerequisites
 
 -Windows OS
+
 -.NET SDK installed
 
+-Optional Visual Studio
+
 Steps
-Clone the repository or download the source code.
 
-Ensure the audio file (Cypher Chatbot.wav) is in the same directory as the executable.
+1.Clone the repository or download the source code.
 
-Open a terminal and navigate to the project folder.
+2.Ensure the audio file (Cypher Chatbot.wav) is in the same directory/floder as the .exe.
 
-Build the project & run. 
+3. Build and run. 
 
 ---------------------------------------------------------------------------------
 How to Use the Project
 ---------------------------------------------------------------------------------
 Once launched, Cypher will:
 
-Greet you with a banner.
+1.Greet you with a banner.
 
-Play the intro audio.
+2.Play the intro audio.
 
-Ask for your name.
+3.Ask for your name.
 
-Prompt how can I assist you.
+4.Greet you, provide a brief description and present the main topics.
+
+5.Prompt how can I assist you. 
 
 Available Topics:
 
