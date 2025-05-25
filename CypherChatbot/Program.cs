@@ -157,26 +157,6 @@ Topics you can ask me about:
             Console.ResetColor();
         }
 
-    // Dictionary to match keywords to numeric inputs.
-        static readonly Dictionary<string, string> numberToKeyword = new Dictionary<string, string>
-        {
-            {"1", "social"},
-            {"2", "phishing"},
-            {"3", "password"},
-            {"4", "scam"},
-            {"5", "wi-fi"},
-            {"6", "device"},
-            {"7", "safety"},
-            {"8", "convo"},
-            {"9", "privacy"},
-            {"10", "update"},
-            {"11", "malware"},
-            {"12", "vpn"},
-            {"13", "backup"},
-            {"14", "2fa"},
-            {"15", "permission"}
-        };
-
         // Display the help menu with main topics and usage tips. 
         static void HandleHelpMenu()
         {
@@ -194,10 +174,17 @@ Topics you can ask me about:
             Console.ResetColor();
         }
 
-        // Handle user input by matching it to queries
+        static string currentTopic = null;
+        static List<int> usedTipIndices = new List<int>();
+
         static void HandleUserQuery(string input, string userName)
         {
             var rng = new Random();
+
+            var moreDetailsPhrases = new List<string> {
+        "more details", "i don't understand", "dont understand", "explain",
+        "can you elaborate", "i’m confused", "confused", "clarify", "what do you mean"
+        };
 
             var keywordTips = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
     {
@@ -363,8 +350,46 @@ Topics you can ask me about:
             }
         }
     };
+            var numberToKeyword = new Dictionary<string, string>
+    {
+        { "1", "social" }, { "2", "phishing" }, { "3", "password" },
+        { "4", "scam" }, { "5", "wi-fi" }, { "6", "device" },
+        { "7", "safety" }, { "8", "privacy" }, { "9", "update" },
+        { "10", "malware" }, { "11", "vpn" }, { "12", "backup" },
+        { "13", "2fa" }, { "14", "permission" }, { "15", "convo" }
+    };
 
-            // Try to convert numeric input to keyword
+            string normalizedInput = input.Trim().ToLower();
+
+            // === Check if the user wants more info on the same topic ===
+            if (currentTopic != null && moreDetailsPhrases.Any(p => normalizedInput.Contains(p)))
+            {
+                var tips = keywordTips[currentTopic];
+                var remainingTips = tips
+                    .Select((tip, index) => new { tip, index })
+                    .Where(t => !usedTipIndices.Contains(t.index))
+                    .ToList();
+
+                if (remainingTips.Count > 0)
+                {
+                    var nextTip = remainingTips[rng.Next(remainingTips.Count)];
+                    usedTipIndices.Add(nextTip.index);
+
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    PrintWithEffect($"Cypher: Sure! Here's another tip on {currentTopic}: {nextTip.tip}");
+                    Console.ResetColor();
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Cyan;
+                    PrintWithEffect("Cypher: I've shared all I have on that topic. Want to ask about something else?");
+                    Console.ResetColor();
+                    currentTopic = null;
+                    usedTipIndices.Clear();
+                }
+                return;
+            }
+
             string matchedKeyword = null;
             if (numberToKeyword.ContainsKey(input))
             {
@@ -372,7 +397,6 @@ Topics you can ask me about:
             }
             else
             {
-                // Otherwise check if any keyword is contained in input string
                 foreach (var keyword in keywordTips.Keys)
                 {
                     if (input.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
@@ -386,21 +410,25 @@ Topics you can ask me about:
             if (matchedKeyword != null)
             {
                 var tips = keywordTips[matchedKeyword];
-                // Pick a random tip to reply with
-                string response = tips[rng.Next(tips.Count)];
+                currentTopic = matchedKeyword;
+                usedTipIndices.Clear();
+
+                int tipIndex = rng.Next(tips.Count);
+                usedTipIndices.Add(tipIndex);
+
+                string response = tips[tipIndex];
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 PrintWithEffect($"Cypher: {response}");
                 Console.ResetColor();
             }
             else
             {
-                // Handle unexpected input with a random generic response
                 var randomResponses = new List<string>
-                {
-                    "I didn’t quite catch that. Could you try another topic?",
-                    "Let’s try a different question. Type 'help' to see topics.",
-                    "Hmm, that’s new to me! Ask about cybersecurity or type 'help'."
-                };
+        {
+            "I didn’t quite catch that. Could you try another topic?",
+            "Let’s try a different question. Type 'help' to see topics.",
+            "Hmm, that’s new to me! Ask about cybersecurity or type 'help'."
+        };
                 string response = randomResponses[rng.Next(randomResponses.Count)];
                 Console.ForegroundColor = ConsoleColor.Red;
                 PrintWithEffect($"Cypher: {response}");
