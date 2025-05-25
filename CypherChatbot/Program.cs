@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Media;
 using System.Threading;
 
@@ -156,6 +157,26 @@ Topics you can ask me about:
             Console.ResetColor();
         }
 
+    // Dictionary to match keywords to numeric inputs.
+        static readonly Dictionary<string, string> numberToKeyword = new Dictionary<string, string>
+        {
+            {"1", "social"},
+            {"2", "phishing"},
+            {"3", "password"},
+            {"4", "scam"},
+            {"5", "wi-fi"},
+            {"6", "device"},
+            {"7", "safety"},
+            {"8", "convo"},
+            {"9", "privacy"},
+            {"10", "update"},
+            {"11", "malware"},
+            {"12", "vpn"},
+            {"13", "backup"},
+            {"14", "2fa"},
+            {"15", "permission"}
+        };
+
         // Display the help menu with main topics and usage tips. 
         static void HandleHelpMenu()
         {
@@ -176,90 +197,215 @@ Topics you can ask me about:
         // Handle user input by matching it to queries
         static void HandleUserQuery(string input, string userName)
         {
-            // Dictionary mapping keywords to responses
-            var topics = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+            var rng = new Random();
+
+            var keywordTips = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
     {
-        { "social", "Think twice before sharing personal stuff online. Keep your profiles private and steer clear of sketchy links—even if they come from friends." },
-        { "phishing", "Phishing is when someone pretends to be trustworthy to steal your info. Always check where emails come from, and don’t rush to click!" },
-        { "password", "Use strong passwords with a mix of letters, numbers, and symbols. Try not to reuse them, and a password manager can really help." },
-        { "scam", "If it sounds too good to be true, it probably is. Stick to trusted websites and don’t give away info to strangers online." },
-        { "wi-fi", "Public Wi-Fi isn’t always safe. Avoid logging into sensitive accounts, or use a VPN if you really need to connect." },
-        { "device", "Keep your phone and computer updated, avoid random apps, and use screen locks and antivirus to stay safe." },
-        { "safety", "Trust your gut! If something feels off, it probably is. Better to slow down and double-check than take a risk." },
-        { "privacy", "Check your app and browser settings. Give apps only the permissions they really need, nothing extra." },
-        { "update", "Don’t skip updates—they fix security bugs and help keep your devices protected from new threats." },
-        { "malware", "Avoid shady downloads or pirated software. A good antivirus and a little caution go a long way." },
-        { "vpn", "A VPN keeps your internet use private, especially on public Wi-Fi. It’s like a safety tunnel for your data." },
-        { "backup", "Back up your files just in case something goes wrong. It's a lifesaver if your device crashes or gets hacked." },
-        { "2fa", "Two-Factor Authentication adds an extra layer of security. It’s a small step that makes a big difference." },
-        { "permission", "Apps don’t need access to everything! Review permissions and turn off anything that seems unnecessary." },
-        { "convo", "Feel free to chat! Try asking things like 'how are you', 'what’s your purpose', or 'what can I ask you'." },
-        { "conversation", "Feel free to chat! Try asking things like 'how are you', 'what’s your purpose', or 'what can I ask you'." },
-        { "how are you", "I’m doing great and ready to help you stay safe online!" },
-        { "what can i ask you", "You can ask about stuff like social media safety, scams, passwords, or just type 'help' to see more." },
-        { "what can i ask", "You can ask about stuff like social media safety, scams, passwords, or just type 'help' to see more." },
-        { "what's your purpose", "I’m here to help you stay safe and smart while using the internet." },
-        { "what is your purpose", "I’m here to help you stay safe and smart while using the internet." },
-        { "what do you do", "I share tips on how to protect yourself online and avoid the bad stuff." },
-        { "purpose", "I’m here to help you stay safe and smart while using the internet." }
+        { "social", new List<string>
+            {
+                "Keep your social media profiles private to avoid identity theft.",
+                "Think before you post. Once it's online, it's out there forever.",
+                "Don’t overshare personal details like your location or contact info."
+            }
+        },
+        { "phishing", new List<string>
+            {
+                "Phishing is when someone pretends to be trustworthy to steal your info. Always check where emails come from.",
+                "Be cautious of emails asking for personal information—scammers disguise themselves as trusted sources.",
+                "Don’t rush to click links. Hover over them first to check where they lead."
+            }
+        },
+        { "password", new List<string>
+            {
+                "Use strong passwords with a mix of letters, numbers, and symbols.",
+                "Avoid reusing the same password on multiple accounts.",
+                "Consider using a password manager to generate and store your passwords."
+            }
+        },
+        { "scam", new List<string>
+            {
+                "If it sounds too good to be true, it probably is.",
+                "Stick to trusted websites and don’t give away info to strangers online.",
+                "Always verify the legitimacy of offers and requests before taking action."
+            }
+        },
+        { "wi-fi", new List<string>
+            {
+                "Public Wi-Fi isn’t always safe. Avoid logging into sensitive accounts.",
+                "Use a VPN to encrypt your data on public networks.",
+                "Turn off auto-connect for open networks when you’re out."
+            }
+        },
+        { "device", new List<string>
+            {
+                "Keep your phone and computer updated regularly.",
+                "Avoid installing random apps from untrusted sources.",
+                "Use screen locks and antivirus software for extra protection."
+            }
+        },
+        { "safety", new List<string>
+            {
+                "Trust your instincts—if something feels off, it probably is.",
+                "Slow down and double-check before clicking or sharing online.",
+                "Cybersecurity is about awareness—stay alert!"
+            }
+        },
+        { "privacy", new List<string>
+            {
+                "Check app and browser settings to control what you share.",
+                "Only give apps the permissions they truly need.",
+                "Use private browsing when researching sensitive topics."
+            }
+        },
+        { "update", new List<string>
+            {
+                "Don’t skip updates—they fix security bugs and keep you protected.",
+                "Enable auto-updates for your OS and apps to stay current.",
+                "Software updates often patch vulnerabilities hackers exploit."
+            }
+        },
+        { "malware", new List<string>
+            {
+                "Avoid downloading pirated software—it often carries malware.",
+                "Install antivirus software and keep it updated.",
+                "Think twice before opening unknown email attachments."
+            }
+        },
+        { "vpn", new List<string>
+            {
+                "A VPN encrypts your connection and hides your IP address.",
+                "Use a VPN on public Wi-Fi to protect your data.",
+                "VPNs help prevent tracking and improve online privacy."
+            }
+        },
+        { "backup", new List<string>
+            {
+                "Back up your files regularly to avoid data loss.",
+                "Use both cloud and local backups for safety.",
+                "Test your backups occasionally to ensure they work."
+            }
+        },
+        { "2fa", new List<string>
+            {
+                "Enable Two-Factor Authentication on all important accounts.",
+                "2FA adds an extra layer of security even if your password is leaked.",
+                "Use authenticator apps for more secure 2FA than SMS."
+            }
+        },
+        { "permission", new List<string>
+            {
+                "Apps don’t need access to everything—review their permissions.",
+                "Turn off microphone or camera access if not needed.",
+                "Remove app permissions you don’t recognize or use."
+            }
+        },
+        { "convo", new List<string>
+            {
+                "Let’s talk! Try asking about privacy, scams, or any online danger.",
+                "I’m here to chat and help you stay secure online.",
+                "Want a tip or just some cyber-chitchat? I’ve got you."
+            }
+        },
+        { "conversation", new List<string>
+            {
+                "Let’s talk! Try asking about privacy, scams, or any online danger.",
+                "I’m here to chat and help you stay secure online.",
+                "Want a tip or just some cyber-chitchat? I’ve got you."
+            }
+        },
+        { "how are you", new List<string>
+            {
+                "I’m doing great and ready to help you stay safe online!",
+                "Always vigilant, always cyber-secure!",
+                "Feeling firewalled and fabulous—thanks for asking!"
+            }
+        },
+        { "what can i ask you", new List<string>
+            {
+                "You can ask about scams, privacy, social media, VPNs and more.",
+                "Ask me about staying safe online, phishing, passwords—anything cybersecurity.",
+                "I’ve got tips on malware, backups, updates, and way more!"
+            }
+        },
+        { "what can i ask", new List<string>
+            {
+                "You can ask about scams, privacy, social media, VPNs and more.",
+                "Ask me about staying safe online, phishing, passwords—anything cybersecurity.",
+                "I’ve got tips on malware, backups, updates, and way more!"
+            }
+        },
+        { "what's your purpose", new List<string>
+            {
+                "I’m here to help you stay safe and smart while using the internet.",
+                "My purpose? Keeping you one step ahead of cyber threats.",
+                "Guiding you through the digital world securely—that’s what I do!"
+            }
+        },
+        { "what is your purpose", new List<string>
+            {
+                "I’m here to help you stay safe and smart while using the internet.",
+                "My purpose? Keeping you one step ahead of cyber threats.",
+                "Guiding you through the digital world securely—that’s what I do!"
+            }
+        },
+        { "what do you do", new List<string>
+            {
+                "I give you cybersecurity tips to stay safe online.",
+                "I share advice to protect your data, privacy, and devices.",
+                "I help you spot scams, dodge malware, and browse smart."
+            }
+        },
+        { "purpose", new List<string>
+            {
+                "I’m here to help you stay safe and smart while using the internet.",
+                "My purpose? Keeping you one step ahead of cyber threats.",
+                "Guiding you through the digital world securely—that’s what I do!"
+            }
+        }
     };
 
-            // Number-to-topic mapping
-            var numberMap = new Dictionary<string, string>
-    {
-        { "1", "social" },
-        { "2", "phishing" },
-        { "3", "password" },
-        { "4", "scam" },
-        { "5", "wi-fi" },
-        { "6", "device" },
-        { "7", "safety" },
-        { "8", "conversation" },
-        { "9", "privacy" },
-        { "10", "update" },
-        { "11", "malware" },
-        { "12", "vpn" },
-        { "13", "backup" },
-        { "14", "2fa" },
-        { "15", "permission" },
-        { "16", "help" }
-    };
-
-            // Convert number input to corresponding keyword
-            if (numberMap.TryGetValue(input, out string topicFromNumber))
+            // Try to convert numeric input to keyword
+            string matchedKeyword = null;
+            if (numberToKeyword.ContainsKey(input))
             {
-                input = topicFromNumber;
+                matchedKeyword = numberToKeyword[input];
             }
-
-            // Exact match
-            if (topics.TryGetValue(input, out string response))
+            else
             {
-                Console.ForegroundColor = ConsoleColor.White;
-                DrawDivider("RESPONSE");
-                Console.ForegroundColor = ConsoleColor.Gray;
-                PrintWithEffect($"\nCypher: {response}\n");
-                Console.ResetColor();
-                return;
-            }
-
-            // Keyword recognition in input
-            foreach (var keyword in topics.Keys)
-            {
-                if (input.Contains(keyword.ToLower()))
+                // Otherwise check if any keyword is contained in input string
+                foreach (var keyword in keywordTips.Keys)
                 {
-                    Console.ForegroundColor = ConsoleColor.White;
-                    DrawDivider("RESPONSE");
-                    Console.ForegroundColor = ConsoleColor.Gray;
-                    PrintWithEffect($"\nCypher: {topics[keyword]}\n");
-                    Console.ResetColor();
-                    return;
+                    if (input.IndexOf(keyword, StringComparison.OrdinalIgnoreCase) >= 0)
+                    {
+                        matchedKeyword = keyword;
+                        break;
+                    }
                 }
             }
 
-            // If no matches found
-            Console.ForegroundColor = ConsoleColor.Red;
-            PrintWithEffect($"\nCypher: I’m not sure about that, {userName}. Type 'help' to see your options.");
-            Console.ResetColor();
+            if (matchedKeyword != null)
+            {
+                var tips = keywordTips[matchedKeyword];
+                // Pick a random tip to reply with
+                string response = tips[rng.Next(tips.Count)];
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                PrintWithEffect($"Cypher: {response}");
+                Console.ResetColor();
+            }
+            else
+            {
+                // Handle unexpected input with a random generic response
+                var randomResponses = new List<string>
+                {
+                    "I didn’t quite catch that. Could you try another topic?",
+                    "Let’s try a different question. Type 'help' to see topics.",
+                    "Hmm, that’s new to me! Ask about cybersecurity or type 'help'."
+                };
+                string response = randomResponses[rng.Next(randomResponses.Count)];
+                Console.ForegroundColor = ConsoleColor.Red;
+                PrintWithEffect($"Cypher: {response}");
+                Console.ResetColor();
+            }
         }
 
         // Draw a divider line with a title, organizes conversations and seperates them
