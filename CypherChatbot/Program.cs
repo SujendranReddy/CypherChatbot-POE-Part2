@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Media;
+using System.Security.Policy;
 using System.Threading;
 
 namespace CypherChatBot
@@ -18,9 +19,15 @@ namespace CypherChatBot
 
         //Trigger words for sentiment detection. 
         static readonly List<string> sentimentKeywords = new List<string>
-        {
-            "worried", "scared", "frustrated", "anxious", "confused", "upset"
-        };
+{
+    "worried", "scared", "frustrated", "anxious", "confused", "upset",
+    "angry", "nervous", "stressed", "overwhelmed", "afraid", "helpless",   
+    "violated", "targeted", "hacked", "scammed", "tricked", "compromised",
+    "exposed", "phished", "spied", "monitored", "leaked", "breached",   
+    "locked out", "can't access", "account stolen", "identity stolen", "password leaked", 
+    "paranoid", "suspicious", "distrustful", "uncertain", "clueless", "panicked"
+};
+
 
         //Triggers words for more tips. 
         static readonly List<string> clarificationTriggers = new List<string> {
@@ -193,9 +200,31 @@ Topics you can ask me about:
             Console.ResetColor();
         }
 
+
+        //Dictionaru containing definitions 
+        static readonly Dictionary<string, string> topicDefinitions = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+{
+    { "social media safety", "Social Media Safety involves protecting your personal information and managing privacy settings to avoid online threats." },
+    { "phishing", "Phishing is a cyber attack where attackers try to trick you into giving personal information via fake emails or websites." },
+    { "passwords", "Strong Passwords are long, unique, and use a mix of letters, numbers, and symbols to protect your accounts." },
+    { "scam", "Avoiding Scams means staying cautious of online offers or messages that seem too good to be true or request personal data." },
+    { "wi-fi security", "Wi-Fi Security ensures your wireless network is protected using strong passwords and encryption like WPA3." },
+    { "device protection", "Device Protection refers to using antivirus software, keeping systems updated, and avoiding unsafe downloads." },
+    { "staying safe online", "Staying Safe Online means practicing good habits like not oversharing, using secure websites, and avoiding suspicious links." },
+    { "privacy", "Privacy Settings help control what information you share online and who can access it." },
+    { "software updates", "Software Updates fix security bugs and improve the performance and safety of your apps and operating system." },
+    { "malware", "Malware Protection defends against harmful software that can damage or control your device without permission." },
+    { "vpn", "A VPN (Virtual Private Network) encrypts your internet connection, making your browsing more private and secure." },
+    { "backing up your data", "Backing Up Your Data means saving copies of your files in case your device is lost, stolen, or crashes." },
+    { "two-factor authentication", "Two-Factor Authentication adds an extra layer of security by requiring a second code in addition to your password." },
+    { "app permissions", "App Permissions control what data and features an app can access on your device, like location or camera." }
+};
+
+
         // Dictionary listing various topics. 
         static Dictionary<string, List<string>> keywordTips = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase)
 {
+
     { "social", new List<string>
         {
             "Keep your social media profiles private to avoid identity theft.",
@@ -380,6 +409,10 @@ Topics you can ask me about:
                 return;
             }
 
+            // Definition requests
+            if (TryGetDefinition(input))
+                return;
+
             // More details 
             if (clarificationTriggers.Any(phrase => input.Contains(phrase)))
             {
@@ -513,7 +546,7 @@ Topics you can ask me about:
         //Trigger words for offerfavoritetopictip
         static bool IsBored(string input)
         {
-            string[] bored = new[] { "hello", "hi", "hey", "greetings", "good morning", "good afternoon", "good evening","bored","boring","idk", "i dont know" };
+            string[] bored = new[] { "hello", "hi", "hey", "greetings", "whats up", "ok", "cool","bored","boring","idk", "i dont know" };
             return bored.Any(g => input.Contains(g));
         }
 
@@ -580,6 +613,32 @@ Topics you can ask me about:
             }
         }
 
+        //Method for definitions
+        static bool TryGetDefinition(string input)
+        {
+            string[] definitionTriggers = { "what is", "define", "meaning of", "explain", "whats" };
+
+            foreach (var trigger in definitionTriggers)
+            {
+                if (input.ToLower().Contains(trigger))
+                {
+                    foreach (var topic in topicDefinitions.Keys)
+                    {
+                        if (input.ToLower().Contains(topic.ToLower()))
+                        {
+                            Console.ForegroundColor = ConsoleColor.Green;
+                            PrintWithEffect($"Cypher: {topicDefinitions[topic]}");
+                            Console.ResetColor();
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
+
         static void DrawDivider(string text)
         {
             Console.ForegroundColor = ConsoleColor.DarkBlue;
@@ -600,3 +659,11 @@ Topics you can ask me about:
         }
     }
 }
+
+
+
+
+
+
+
+
