@@ -1,4 +1,3 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/abWLn-9_)
 
 ---------------------------------------------------------------------------------
 Cypher - Cybersecurity Chatbot
@@ -79,7 +78,36 @@ exit - Leave the chat safely.
 Example Interactions:
 
 Input: phishing 
+
 Output: Cypher explains what phishing is.
 
 Input: how are you
+
 Output: Cypher responds with a personality-based reply.
+
+---------------------------------------------------------------------------------
+New Features
+---------------------------------------------------------------------------------
+
+- Sentiment Detection: If you say things like "I'm worried" or "I'm scared", Cypher will respond supportively.
+- Definitions: Ask things like `what is malware` or `define vpn` and Cypher will explain.
+- Memory: Cypher remembers your **favorite topic** during the session. If you're bored, just say so!
+- Natural Prompts: You don’t need perfect commands. It accepts casual phrases like:
+
+  - `"I'm bored"`
+  - `"can you explain wi-fi security?"`
+  - `"tell me about phishing scams"`
+  - 
+You can ask about a topic directly or request help in natural language.
+
+Examples:
+
+- `phishing`  
+- `what is phishing`  
+- `tell me about strong passwords`  
+- `I'm worried about scams`  
+- `give me more details` (after a topic is selected)  
+- `how are you`  
+- `exit`You can ask about a topic directly or request help in natural language.
+
+
